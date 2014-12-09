@@ -53,7 +53,12 @@
 
 (defprotocol EDNable
   (to-edn [jsoup]
-    "Converts Jsoup into an edn representation of HTML."))
+    "Converts Jsoup into an edn representation of HTML.
+
+       {:type    Keyword
+        :tag     Keyword|nil
+        :attrs   {Keyword String, ...}|nil
+        :content Vector|Map|String|nil}"))
 
 
 (extend-protocol EDNable
@@ -268,6 +273,20 @@
 
 
 (defn extract
+  "ks is a vector of keys that will be zipped into a map
+   with the extracted data, ie:
+
+     {(first ks) (first (run-extractions source extractions))}
+
+   If ks is nil or empty, a sequence of extracted data will
+   be returned instead.
+
+   Extractions are a selector (see `select`) followed by an
+   extractor (see `Extractable`).
+
+     (extract (parse subreddit)
+              [:headlines]
+              \".sitetable .thing .title a.title\" text)"
   [source ks & extractions]
 
   (let [extractions (partition 2 extractions)
@@ -281,6 +300,13 @@
 
 
 (defn extract-from
+  "Behaves like extract, but prior to running extractions
+   uses the provided selector to narrow down the data to
+   be searched.
+
+   This is useful, for instance, when one wants to select
+   a sequence of items, then extract identical information
+   from each."
   [source selector ks & extractions]
 
   (let [sources (select source selector)]
