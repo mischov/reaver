@@ -14,8 +14,8 @@ Here is how one might scrape the headlines and links from r/Clojure into a Cloju
 ; Extract the headlines and urls from the HTML into a seq of maps.
 (extract-from (parse rclojure) ".sitetable .thing"
               [:headline :url]
-	      ".title a.title" text
-	      ".title a.title" (attr :href))
+              ".title a.title" text
+              ".title a.title" (attr :href))
 
 ;> ({:headline "...", :url "..."}, {:headline "...", :url "..."}, ...)
 ```
