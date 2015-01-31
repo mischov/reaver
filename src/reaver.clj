@@ -114,7 +114,10 @@
    http://jsoup.org/cookbook/extracting-data/selector-syntax"
   [^Node node ^String css-selector]
 
-  (.select node css-selector))
+  (let [^Elements result (.select node css-selector)]
+    (if (.isEmpty result)
+      nil
+      result)))
 
 
 ;;
@@ -140,6 +143,37 @@
   (data [x]
     "Returns a string representing all the data (ie. from scripts)
      contained by the node."))
+
+
+(extend-protocol Extractable
+  nil
+  (jsoup
+    [_]
+    nil)
+  
+  (edn
+    [_]
+    nil)
+  
+  (tag
+    [_]
+    nil)
+  
+  (attr*
+    [_ _]
+    nil)
+
+  (attrs
+    [_]
+    nil)
+
+  (text
+    [_]
+    nil)
+
+  (data
+    [_]
+    nil))
 
 
 (extend-protocol Extractable
