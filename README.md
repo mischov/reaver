@@ -32,7 +32,7 @@ Here is how one might scrape the headlines and links from r/Clojure into a Cloju
 Add the following dependency to your project.clj file:
 
 ```clojure
-[reaver "0.1.1"]
+[reaver "0.1.2"]
 ```
 [**Back To Top ⇧**](#contents)
 
