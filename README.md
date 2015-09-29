@@ -5,17 +5,16 @@ Reaver is a Clojure library wrapping Jsoup and designed for extracting data out 
 Here is how one might scrape the headlines and links from r/Clojure into a Clojure map:
 
 ```Clojure
-(require '[reaver :refer [parse extract-from text attr])
+(require '[reaver.core :as reaver])
 
 ; Reaver doesn't tell you how fetch your HTML. Use `slurp` or
 ; aleph or clj-http or what-have-you.
-(def rclojure (slurp "http://www.reddit.com/r/clojure"))
+(def rclojure (slurp "https://www.reddit.com/r/clojure"))
 
 ; Extract the headlines and urls from the HTML into a seq of maps.
-(extract-from (parse rclojure) ".sitetable .thing"
-              [:headline :url]
-              ".title a.title" text
-              ".title a.title" (attr :href))
+(reaver/extract-from-as (reaver/parse rclojure) ".sitetable .thing"
+                 :headline ".title a.title" reaver/text
+                 :url      ".title a.title" (reaver/attr :href))
 
 ;> ({:headline "...", :url "..."}, {:headline "...", :url "..."}, ...)
 ```
@@ -23,8 +22,9 @@ Here is how one might scrape the headlines and links from r/Clojure into a Cloju
 ## Contents
 
 - [Installation](#installation)
-- [Why?](#why)
+- [Rationale](#rationale)
 - [Status](#status)
+- [API](#api)
 
 
 ## Installation
@@ -37,7 +37,7 @@ Add the following dependency to your project.clj file:
 [**Back To Top ⇧**](#contents)
 
 
-## Why?
+## Rationale
 
 Clojure doesn't have a simple, purposed library for extracting data from HTML and into EDN.
 
@@ -57,8 +57,63 @@ There may still be lurking bugs or inconsistencies, so please report if you enco
 
 [**Back To Top ⇧**](#contents)
 
+## API
+
+- [`parse`](#parse)
+- [`parse-fragment`](#parse-fragment)
+- [`extract`](#extract)
+- [`extract-as`](#extract-as)
+- [`extract-from`](#extract-from)
+- [`extract-from-as`](#extract-from-as)
+
+###`parse`
+
+Parses a string of HTML representing a full HTML document into Jsoup.
+
+###`parse-fragment`
+
+Parses a string representing a fragment of HTML into Jsoup.
+
+###`extract`
+
+```Clojure
+(reaver/extract (reaver/parse clojure-reddit)
+                ".sitetable .thing .title a.title" reaver/text)
+
+;> ("..." "..." "..." ...)
+```
+
+###`extract-as`
+
+```Clojure
+(reaver/extract-as (reaver/parse clojure-reddit)
+                   :headlines ".sitetable .thing .title a.title" reaver/text)
+
+;> {:headlines ("..." "..." "..." ...)}
+```
+
+###`extract-from`
+
+```Clojure
+(reaver/extract-from (reaver/parse clojure-reddit) ".sitetable .thing"
+                     ".title a.title" reaver/text)
+
+;> ("..." "..." "..." ...)
+```
+
+###`extract-from-as`
+
+```Clojure
+(reaver/extract-from-as (reaver/parse clojure-reddit) ".sitetable .thing"
+                        :headline ".title a.title" reaver/text)
+
+;> ({:headline "..."} {:headline "..."} {:headline "..."} ...)
+```
+
+[**Back To Top ⇧**](#contents)
+
 ## License
 
-Copyright © 2014 Mischov
+Copyright © 2015 Mischov
 
 Distributed under the Eclipse Public License.
