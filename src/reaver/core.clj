@@ -218,34 +218,12 @@
 ;;  Format Data Extractions
 
 (defn run-extraction
-  [source sel [selector extractor]]
-  (let [selection (sel source selector)]
-    (extractor selection)))
-
-(defn run-labeled-extraction
   [source sel [label selector extractor]]
-  [label (run-extraction source sel [selector extractor])])
+  (let [selection (sel source selector)]
+    [label (extractor selection)]))
 
 (defn extract
-  "Extract expects extractions to be a selector (see `select`)
-   followed by an extractor (see `Extractable`).
-
-   Source must be parsed with parse or parse-fragment.
-
-   Example:
-
-     (extract (parse subreddit)
-              \".sitetable .thing .title a.title\" text)
-
-   Returns: A seq of results."
-  [source & extractions]
-  (assert (seq extractions) "Must provide extractions.")
-  (let [extractions' (partition 2 extractions)
-        sel (memoize select)]
-    (map #(run-extraction source sel %) extractions')))
-
-(defn extract-as
-  "Extract-as expects extractions to be a label (to be used as
+  "Extract expects extractions to be a label (to be used as
    a map key), a selector (see `select`), and an extractor
    (see `Extractable`).
 
@@ -261,24 +239,10 @@
   (assert (seq extractions) "Must provide extractions.")
   (let [extractions' (partition 3 extractions)
         sel (memoize select)]
-    (into {} (map #(run-labeled-extraction source sel %) extractions'))))
+    (into {} (map #(run-extraction source sel %) extractions'))))
 
 (defn extract-from
   "Behaves like extract, but uses the provided selector on
-   the source and then maps the extractions over the results.
-
-   Example:
-
-     (extract-from (parse subreddit) \".sitetable .thing\"
-                   \".title a.title\" text)
-
-   Returns: A seq of result seqs."
-  [source selector & extractions]
-  (let [sources (select source selector)]
-    (map #(apply extract % extractions) sources)))
-
-(defn extract-from-as
-  "Behaves like extract-as, but uses the provided selector on
    the source and then maps the extractions over the results.
 
    Example:
@@ -289,4 +253,4 @@
    Returns: A seq of result maps."
   [source selector & extractions]
   (let [sources (select source selector)]
-    (map #(apply extract-as % extractions) sources)))
+    (map #(apply extract % extractions) sources)))

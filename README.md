@@ -8,13 +8,13 @@ Here is how one might scrape the headlines and links from r/Clojure into a Cloju
 (require '[reaver.core :as reaver])
 
 ; Reaver doesn't tell you how fetch your HTML. Use `slurp` or
-; aleph or clj-http or what-have-you.
+; aleph or clj-http or whatever you would like.
 (def rclojure (slurp "https://www.reddit.com/r/clojure"))
 
 ; Extract the headlines and urls from the HTML into a seq of maps.
-(reaver/extract-from-as (reaver/parse rclojure) ".sitetable .thing"
-                 :headline ".title a.title" reaver/text
-                 :url      ".title a.title" (reaver/attr :href))
+(reaver/extract-from (reaver/parse rclojure) ".sitetable .thing"
+                     :headline ".title a.title" reaver/text
+                     :url      ".title a.title" (reaver/attr :href))
 
 ;> ({:headline "...", :url "..."}, {:headline "...", :url "..."}, ...)
 ```
@@ -39,11 +39,11 @@ Add the following dependency to your project.clj file:
 
 ## Rationale
 
-Clojure doesn't have a simple, purposed library for extracting data from HTML and into EDN.
+Reaver is a simple, purposed library for extracting data from HTML and into EDN.
 
 The libraries most commonly used for this, Enlive and Laser, are primarily templating libraries, and extracting data from the data.xml format (like that created by Crouton) can be complicated and/or slow.
 
-Reaver leverages Jsoup's well-fleshed-out selection and extraction mechanisms to provide an easy API for extracting data from XML. 
+Reaver wraps Jsoup's well-fleshed-out selection and extraction mechanisms in a simple Clojure API for extracting data from XML. 
 
 [**Back To Top ⇧**](#contents)
 
@@ -59,56 +59,94 @@ There may still be lurking bugs or inconsistencies, so please report if you enco
 
 ## API
 
-- [`parse`](#parse)
-- [`parse-fragment`](#parse-fragment)
-- [`extract`](#extract)
-- [`extract-as`](#extract-as)
-- [`extract-from`](#extract-from)
-- [`extract-from-as`](#extract-from-as)
+- [Selectors](#selectors)
+- [Extractors](#extractors)
+- [**`parse`**](#parse)
+- [**`parse-fragment`**](#parse-fragment)
+- [**`extract`**](#extract)
+- [**`extract-from`**](#extract-from)
 
-###`parse`
+#### Selectors
+
+Reaver leverages Jsoup's selection format, which is css-esque selector strings.
+
+For more information, see Jsoup's [selector syntax documentation](http://jsoup.org/cookbook/extracting-data/selector-syntax).
+
+#### Extractors
+
+Reaver provides several basic extraction functions to help you coerce selections into a useful format: `jsoup edn tag attrs attr* attr text data chain`
+
+```Clojure
+(def parsed-html
+ (reaver/parse-fragment "<a class=\"clickable\" href=\"https://www.google.com/\">Google</a>"))
+
+(reaver/jsoup parsed-html)
+;> #object[org.jsoup.nodes.Element ... "<a class=\"clickable\" href=\"https://www.google.com/\">Google</a>"]
+
+(reaver/edn parsed-html)
+;> {:type :element,
+;   :attrs {:class "clickable", :href "https://www.google.com/"},
+;   :tag :a,
+;   :content ["Google"]}
+
+(reaver/tag parsed-html) 
+;> :a
+
+(reaver/attrs parsed-html) 
+;> {:class "clickable", :href "https://www.google.com"}
+
+(reaver/attr parsed-html :class)
+;> "clickable"
+
+((reaver/attr :class) parsed-html) 
+;> "clickable"
+
+(reaver/text parsed-html) 
+;> "Google"
+
+;; data
+
+;; chain
+
+
+```
+
+####`parse`
 
 Parses a string of HTML representing a full HTML document into Jsoup.
 
-###`parse-fragment`
+####`parse-fragment`
 
 Parses a string representing a fragment of HTML into Jsoup.
 
-###`extract`
+####`extract`
+
+Extract takes a parsed source and a variable number of extractions, and returns a map of results.
+
+The first arg of an extraction is a key that the results of extraction will be stored under in the result map, the second arg is a selector, and the third arg is an extractor fn.
 
 ```Clojure
 (reaver/extract (reaver/parse clojure-reddit)
-                ".sitetable .thing .title a.title" reaver/text)
-
-;> ("..." "..." "..." ...)
-```
-
-###`extract-as`
-
-```Clojure
-(reaver/extract-as (reaver/parse clojure-reddit)
-                   :headlines ".sitetable .thing .title a.title" reaver/text)
+                :headlines ".sitetable .thing .title a.title" reaver/text)
 
 ;> {:headlines ("..." "..." "..." ...)}
 ```
 
-###`extract-from`
+####`extract-from`
+
+Extract-from takes a parsed source, a selector, and a variable number extractions, and returns a seq of result maps.
+
+The extractions are run with extract on the result of calling the selector on the source.
+
+One example use of this behavior is to select a list of items and then extract identical information from each.
 
 ```Clojure
 (reaver/extract-from (reaver/parse clojure-reddit) ".sitetable .thing"
-                     ".title a.title" reaver/text)
-
-;> ("..." "..." "..." ...)
-```
-
-###`extract-from-as`
-
-```Clojure
-(reaver/extract-from-as (reaver/parse clojure-reddit) ".sitetable .thing"
-                        :headline ".title a.title" reaver/text)
+                     :headline ".title a.title" reaver/text)
 
 ;> ({:headline "..."} {:headline "..."} {:headline "..."} ...)
 ```
+
 
 [**Back To Top ⇧**](#contents)
 
