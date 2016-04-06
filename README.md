@@ -5,7 +5,7 @@ Reaver is a Clojure library wrapping Jsoup and designed for extracting data out 
 Here is how one might scrape the headlines and links from r/Clojure into a Clojure map:
 
 ```Clojure
-(require '[reaver :refer [parse extract-from text attr])
+(require '[reaver :refer [parse extract-from text attr]])
 
 ; Reaver doesn't tell you how fetch your HTML. Use `slurp` or
 ; aleph or clj-http or what-have-you.
