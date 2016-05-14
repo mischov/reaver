@@ -9,13 +9,13 @@ Here is how one might scrape the headlines and links from r/Clojure into a Cloju
 
 ; Reaver doesn't tell you how fetch your HTML. Use `slurp` or
 ; aleph or clj-http or what-have-you.
-(def rclojure (slurp "http://www.reddit.com/r/clojure"))
+(def rhacker (slurp "https://news.ycombinator.com/"))
 
 ; Extract the headlines and urls from the HTML into a seq of maps.
-(extract-from (parse rclojure) ".sitetable .thing"
+(extract-from (parse rhacker) ".itemlist"
               [:headline :url]
-              ".title a.title" text
-              ".title a.title" (attr :href))
+              ".athing .title > a" text
+              ".athing .title > a" (attr :href))
 
 ;> ({:headline "...", :url "..."}, {:headline "...", :url "..."}, ...)
 ```
