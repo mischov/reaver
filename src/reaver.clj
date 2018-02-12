@@ -261,6 +261,37 @@
       (map data elements))))
 
 
+(extend-protocol Extractable
+  TextNode
+  (jsoup
+    [node]
+    node)
+
+  (edn
+    [node]
+    (to-edn node))
+
+  (tag
+    [node]
+    nil)
+
+  (attr*
+    [node attribute]
+    nil)
+
+  (attrs
+    [node]
+    nil)
+
+  (text
+    [node]
+    (.getWholeText node))
+
+  (data
+    [node]
+    nil))
+
+
 (defn attr
   "Convinience function allowing:
 
