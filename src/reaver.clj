@@ -293,7 +293,7 @@
 
 
 (defn attr
-  "Convinience function allowing:
+  "Convenience function allowing:
 
      (chain (attr :href) ..)
 
