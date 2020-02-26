@@ -1,4 +1,4 @@
-(defproject reaver "0.1.2"
+(defproject reaver "0.1.3"
   :description "Extract data from HTML with Clojure."
   :url "https://github.com/mischov/reaver"
   :license {:name "Eclipse Public License"
