@@ -32,7 +32,7 @@ Here is how one might scrape the headlines and links from Hacker News into a Clo
 Add the following dependency to your project.clj file:
 
 ```clojure
-[reaver "0.1.2"]
+[reaver "0.1.3"]
 ```
 [**Back To Top ⇧**](#contents)
 
@@ -43,7 +43,7 @@ Clojure doesn't have a simple, purposed library for extracting data from HTML an
 
 The libraries most commonly used for this, Enlive and Laser, are primarily templating libraries, and extracting data from the data.xml format (like that created by Crouton) can be complicated and/or slow.
 
-Reaver leverages Jsoup's well-fleshed-out selection and extraction mechanisms to provide an easy API for extracting data from XML. 
+Reaver leverages Jsoup's well-fleshed-out selection and extraction mechanisms to provide an easy API for extracting data from XML.
 
 [**Back To Top ⇧**](#contents)
 
