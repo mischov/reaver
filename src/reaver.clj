@@ -98,7 +98,7 @@
 
    For more on selector syntax, see:
    http://jsoup.org/cookbook/extracting-data/selector-syntax"
-  [^Node node ^String css-selector]
+  [^Element node ^String css-selector]
   (let [^Elements result (.select node css-selector)]
     (if (.isEmpty result)
       nil
