@@ -6,4 +6,4 @@
   :dependencies [[org.jsoup/jsoup "1.18.3"]]
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.12.0"]
                                   [criterium "0.4.6"]]
-                   :warn-on-reflection true}})
+                   :global-vars {*warn-on-reflection* true}}})
